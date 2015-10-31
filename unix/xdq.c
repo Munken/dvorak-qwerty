@@ -102,26 +102,27 @@ unsigned int kModifierKeycodes[] = {
 
 // X keycodes corresponding to keys, regardless of layout.
 const int kKeycodes[] = {
-                                        20, 21,
-  24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+                                        /*20, 21,*/
+  24, 25, 26, 27, 28, 29, 30, 31, 32, 33, /*34, 35,*/
    38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
      52, 53, 54, 55, 56, 57, 58, 59, 60, 61
 };
 
 const char kQwerty[] =
-            "-="
-  "qwertyuiop[]"
+            ""
+  "qwertyuiop"
   "asdfghjkl;'"
-   "zxcvbnm,./";
+   "zxcvbnm,.-";
 
 const char kDvorak[] =
-            "[]"
-  "',.pyfgcrl/="
-  "aoeuidhtns-"
-   ";qjkxbmwvz";
+            ""
+  "-,.iyfpcrl"
+  "aoeughdtns'"
+   ";qjkbxmvwz";
+
 
 // The user has their keyboard layout set to Dvorak.  When we get a keycode, we
-// map it to a letter acconding to Qwerty, then figure out which keycode would
+// map it to a letter acconding to Qwerty, then figure out which keycode would 
 // map to the same letter in Dvorak.  This tells us what keycode to send to the
 // focus window.  For efficiency, we build a lookup table in keycode_mapping.
 //
@@ -136,10 +137,13 @@ void InitKeycodeMapping() {
 
   for (int i = 0; i < size; i++) {
     dvorak_to_keycode[(int) kDvorak[i]] = kKeycodes[i];
+    printf("%c %d %d\n",kDvorak[i], kDvorak[i] , kKeycodes[i]);
   }
+  printf("\n");
 
   memset(keycode_mapping, 0, sizeof(keycode_mapping));
   for (int i = 0; i < size; i++) {
+	printf("%c %d\n",kQwerty[i], kQwerty[i]);
     assert(dvorak_to_keycode[(int) kQwerty[i]] != 0);
     keycode_mapping[kKeycodes[i]] = dvorak_to_keycode[(int) kQwerty[i]];
   }
@@ -276,6 +280,8 @@ int main(int argc, char* argv[]) {
         if (event.xkey.keycode >= 0 &&
             event.xkey.keycode < arraysize(keycode_mapping)) {
           int new_keycode = keycode_mapping[event.xkey.keycode];
+	  printf("Got %d map to %d\n", event.xkey.keycode, new_keycode);
+	  fflush(stdout);
           if (new_keycode != 0) {
             event.xkey.keycode = new_keycode;
           }
